@@ -2,6 +2,7 @@ package dev.polek.photobrowser.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import dev.polek.photobrowser.databinding.PhotoLayoutBinding
@@ -33,6 +34,11 @@ class PhotoAdapter : RecyclerView.Adapter<PhotoAdapter.ViewHolder>() {
             .load(photo.url)
             .centerInside()
             .into(holder.binding.imageView)
+
+        holder.binding.title.apply {
+            text = photo.title
+            isVisible = photo.title.isNotBlank()
+        }
     }
 
     class ViewHolder(val binding: PhotoLayoutBinding) : RecyclerView.ViewHolder(binding.root)
