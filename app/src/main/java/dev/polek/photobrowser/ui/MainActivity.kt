@@ -1,20 +1,36 @@
 package dev.polek.photobrowser.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.viewpager2.widget.ViewPager2
 import dagger.hilt.android.AndroidEntryPoint
-import dev.polek.photobrowser.R
+import dev.polek.photobrowser.databinding.ActivityMainBinding
+import dev.polek.photobrowser.model.Photo
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainViewModel by viewModels()
+    private val adapter = PhotoAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        val binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        viewModel.loadData()
+        binding.viewPager.adapter = adapter
+        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                val photo = adapter.photos[position]
+                Timber.d("Selected: $photo")
+            }
+        })
+
+        viewModel.photos().observe(this) { photos: List<Photo>? ->
+            photos ?: return@observe
+            adapter.photos = photos
+        }
     }
 }

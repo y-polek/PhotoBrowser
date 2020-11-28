@@ -8,7 +8,7 @@ import retrofit2.http.Query
 
 interface FlickrService {
 
-    @GET("rest/?method=flickr.photos.getrecent&format=json&nojsoncallback=1")
+    @GET("rest/?method=flickr.photos.getrecent&format=json&nojsoncallback=1&extras=original_format")
     @Wrapped(path = ["photos"])
     suspend fun recentPhotos(@Query("page") @IntRange(from = 1) page: Int): PhotoPage
 }
