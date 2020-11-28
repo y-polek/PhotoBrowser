@@ -14,14 +14,14 @@ class MainViewModel @ViewModelInject constructor(
     private val repository: FlickrRepository
 ) : ViewModel() {
 
-    private val photos = MutableLiveData<List<Photo>>()
+    private val recentPhotos = MutableLiveData<List<Photo>>()
 
     init {
         viewModelScope.launch {
-            val page = repository.recentPhotos()
-            photos.postValue(page.photos)
+            val photos = repository.recentPhotos()
+            recentPhotos.postValue(photos)
         }
     }
 
-    fun photos(): LiveData<List<Photo>> = photos
+    fun recentPhotos(): LiveData<List<Photo>> = recentPhotos
 }

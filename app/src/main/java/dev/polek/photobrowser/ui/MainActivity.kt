@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        viewModel.photos().observe(this) { photos: List<Photo>? ->
+        viewModel.recentPhotos().observe(this) { photos: List<Photo>? ->
             photos ?: return@observe
             adapter.photos = photos
         }
