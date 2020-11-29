@@ -5,9 +5,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.viewpager2.widget.ViewPager2
-import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import dev.polek.photobrowser.databinding.ActivityMainBinding
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var adapter: PhotoAdapter
+    @Inject lateinit var adapter: PhotoAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,9 +63,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupViewPager() {
-        val imageRequestManager = Glide.with(this)
-        adapter = PhotoAdapter(imageRequestManager)
-
         binding.viewPager.adapter = adapter
         binding.viewPager.offscreenPageLimit = 3
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {

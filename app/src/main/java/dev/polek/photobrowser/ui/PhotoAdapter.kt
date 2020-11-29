@@ -17,8 +17,9 @@ import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
 import dev.polek.photobrowser.databinding.PhotoLayoutBinding
 import dev.polek.photobrowser.model.Photo
+import javax.inject.Inject
 
-class PhotoAdapter(
+class PhotoAdapter @Inject constructor(
     private val glideRequestManager: RequestManager
 ) : RecyclerView.Adapter<PhotoAdapter.ViewHolder>() {
 
