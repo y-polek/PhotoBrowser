@@ -3,6 +3,7 @@ package dev.polek.photobrowser.ui
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import dev.polek.photobrowser.databinding.PhotoLayoutBinding
@@ -12,8 +13,9 @@ class PhotoAdapter : RecyclerView.Adapter<PhotoAdapter.ViewHolder>() {
 
     var photos: List<Photo> = emptyList()
         set(value) {
+            val diff = DiffUtil.calculateDiff(DiffCallback(field, value))
             field = value
-            notifyDataSetChanged()
+            diff.dispatchUpdatesTo(this)
         }
 
     override fun getItemCount() = photos.size
@@ -42,4 +44,21 @@ class PhotoAdapter : RecyclerView.Adapter<PhotoAdapter.ViewHolder>() {
     }
 
     class ViewHolder(val binding: PhotoLayoutBinding) : RecyclerView.ViewHolder(binding.root)
+
+    private class DiffCallback(
+        val oldPhotos: List<Photo>,
+        val newPhotos: List<Photo>
+    ) : DiffUtil.Callback() {
+        override fun getOldListSize() = oldPhotos.size
+
+        override fun getNewListSize() = newPhotos.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldPhotos[oldItemPosition].id == newPhotos[newItemPosition].id
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldPhotos[oldItemPosition] == newPhotos[newItemPosition]
+        }
+    }
 }

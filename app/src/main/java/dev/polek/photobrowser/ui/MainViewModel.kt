@@ -5,23 +5,42 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.polek.photobrowser.model.Photo
 import dev.polek.photobrowser.repository.FlickrRepository
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class MainViewModel @ViewModelInject constructor(
     private val repository: FlickrRepository
 ) : ViewModel() {
 
-    private val recentPhotos = MutableLiveData<List<Photo>>()
+    private val _uiState = MutableLiveData<UiState?>()
+    val uiState: LiveData<UiState?>
+        get() = _uiState
 
     init {
-        viewModelScope.launch {
-            val photos = repository.recentPhotos()
-            recentPhotos.postValue(photos)
-        }
+        loadData()
     }
 
-    fun recentPhotos(): LiveData<List<Photo>> = recentPhotos
+    fun refresh() {
+        loadData()
+    }
+
+    private fun loadData() {
+        val currentState = _uiState.value
+        val currentPhotos = when (currentState) {
+            is UiState.Loading -> currentState.photos
+            is UiState.Loaded -> currentState.photos
+            else -> null
+        }
+
+        _uiState.value = UiState.Loading(currentPhotos)
+
+        viewModelScope.launch {
+            try {
+                val photos = repository.recentPhotos()
+                _uiState.postValue(UiState.Loaded(photos))
+            } catch (e: Throwable) {
+                _uiState.postValue(UiState.Error(e.message.orEmpty()))
+            }
+        }
+    }
 }
