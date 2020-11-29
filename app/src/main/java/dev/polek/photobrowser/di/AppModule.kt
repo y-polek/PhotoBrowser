@@ -9,6 +9,8 @@ import dagger.hilt.android.components.ApplicationComponent
 import dev.polek.photobrowser.BuildConfig
 import dev.polek.photobrowser.api.ApiKeyInterceptor
 import dev.polek.photobrowser.api.FlickrService
+import dev.polek.photobrowser.repository.FlickrRepository
+import dev.polek.photobrowser.repository.FlickrRepositoryImpl
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Level
@@ -57,4 +59,8 @@ object AppModule {
             .build()
             .create(FlickrService::class.java)
     }
+
+    @Singleton
+    @Provides
+    fun flickrRepository(impl: FlickrRepositoryImpl): FlickrRepository = impl
 }

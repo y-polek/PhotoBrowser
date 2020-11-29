@@ -6,11 +6,16 @@ import dev.polek.photobrowser.model.Photo
 import javax.inject.Inject
 import javax.inject.Singleton
 
+interface FlickrRepository {
+    suspend fun recentPhotos(): List<Photo>
+}
+
 @Singleton
-class FlickrRepository @Inject constructor(
+class FlickrRepositoryImpl @Inject constructor(
     private val service: FlickrService
-) {
-    suspend fun recentPhotos(): List<Photo> {
+) : FlickrRepository {
+
+    override suspend fun recentPhotos(): List<Photo> {
         return service.recentPhotos(1)
             .filter(FlickrPhoto::isValid)
             .map { it.toPhoto() }
