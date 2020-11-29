@@ -12,5 +12,19 @@ data class FlickrPhoto(
     @Json(name = "secret") val secret: String?,
     @Json(name = "originalsecret") val originalSecret: String?
 ) {
-    val isValid = id != null && server != null && owner != null && secret != null
+    val isValid = id != null
+            && server != null
+            && owner != null
+            && (secret != null || originalSecret != null)
+
+    fun url(): String {
+        val sizeSuffix = if (originalSecret != null) {
+            // Longest edge = 1600 px
+            "${originalSecret}_h"
+        } else {
+            // Longest edge = 1024 px
+            "${secret}_b"
+        }
+        return "https://live.staticflickr.com/$server/${id}_$sizeSuffix.jpg"
+    }
 }

@@ -30,16 +30,5 @@ class FlickrRepositoryImpl @Inject constructor(
                 title = this.title.orEmpty()
             )
         }
-
-        private fun FlickrPhoto.url(): String {
-            val sizeSuffix = if (originalSecret != null) {
-                // Longest edge = 1600 px
-                "${originalSecret}_h"
-            } else {
-                // Longest edge = 1024 px
-                "${secret}_b"
-            }
-            return "https://live.staticflickr.com/$server/${id}_$sizeSuffix.jpg"
-        }
     }
 }
