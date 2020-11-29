@@ -21,7 +21,11 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
+        // API keys
         buildConfigField "String", "FLICKR_API_KEY", "\"${apiKeys['flickr_api_key']}\""
+
+        // Feature toggles
+        buildConfigField "boolean", "ENABLE_FEATURE_IMAGE_PRELOAD", 'true'
     }
 
     buildTypes {

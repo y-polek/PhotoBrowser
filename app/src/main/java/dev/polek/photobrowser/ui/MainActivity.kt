@@ -12,6 +12,7 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
 import com.bumptech.glide.util.ViewPreloadSizeProvider
 import dagger.hilt.android.AndroidEntryPoint
+import dev.polek.photobrowser.BuildConfig
 import dev.polek.photobrowser.databinding.ActivityMainBinding
 import timber.log.Timber
 
@@ -61,16 +62,7 @@ class MainActivity : AppCompatActivity() {
         val imageRequestManager = Glide.with(this)
         adapter = PhotoAdapter(imageRequestManager)
 
-        try {
-            val recyclerViewField = ViewPager2::class.java.getDeclaredField("mRecyclerView")
-            recyclerViewField.isAccessible = true
-            val recyclerView = recyclerViewField.get(binding.viewPager) as? RecyclerView
-            if (recyclerView != null) {
-                setupImagePreload(imageRequestManager, recyclerView)
-            }
-        } catch (e: NoSuchFieldException) {
-            Timber.e(e, "Failed to setup image preload: RecyclerView field not found")
-        }
+        setupImagePreload(imageRequestManager)
 
         binding.viewPager.adapter = adapter
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -94,7 +86,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupImagePreload(imageRequestManager: RequestManager, recyclerView: RecyclerView) {
+    private fun setupImagePreload(imageRequestManager: RequestManager) {
+        if (!BuildConfig.ENABLE_FEATURE_IMAGE_PRELOAD) return
+
+        val recyclerView = binding.viewPager.recyclerView() ?: return
+
         val preloadModelProvider = object : ListPreloader.PreloadModelProvider<String> {
             override fun getPreloadItems(position: Int): List<String> {
                 return listOf(adapter.photos[position].url)
@@ -110,7 +106,31 @@ class MainActivity : AppCompatActivity() {
             imageRequestManager,
             preloadModelProvider,
             preloadSizeProvider,
-            4)
+            IMAGE_PRELOAD_SIZE
+        )
         recyclerView.addOnScrollListener(preloader)
+    }
+
+    private companion object {
+
+        private const val IMAGE_PRELOAD_SIZE = 4
+
+        /**
+         * This extension function uses reflection to access `RecyclerView` field of `ViewPager2`
+         */
+        private fun ViewPager2.recyclerView(): RecyclerView? {
+            return try {
+                val recyclerViewField = ViewPager2::class.java.getDeclaredField("mRecyclerView")
+                recyclerViewField.isAccessible = true
+                val recyclerView = recyclerViewField.get(this) as? RecyclerView
+                if (recyclerView == null) {
+                    Timber.e("RecyclerView field not found")
+                }
+                recyclerView
+            } catch (e: NoSuchFieldException) {
+                Timber.e(e, "RecyclerView field not found")
+                null
+            }
+        }
     }
 }
