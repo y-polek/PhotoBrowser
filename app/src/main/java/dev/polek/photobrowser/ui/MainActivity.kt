@@ -3,11 +3,11 @@ package dev.polek.photobrowser.ui
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import dev.polek.photobrowser.databinding.ActivityMainBinding
-import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
 
         setupViewPager()
         setupSwipeRefresh()
+        setupErrorView()
 
         viewModel.uiState.observe(this) { state ->
             state ?: return@observe
@@ -32,12 +33,18 @@ class MainActivity : AppCompatActivity() {
             when (state) {
                 is UiState.Loading -> {
                     binding.swipeRefresh.isRefreshing = true
+                    binding.viewPager.isVisible = true
+                    binding.errorView.isVisible = false
+
                     if (state.photos != null) {
                         adapter.photos = state.photos
                     }
                 }
                 is UiState.Loaded -> {
                     binding.swipeRefresh.isRefreshing = false
+                    binding.viewPager.isVisible = true
+                    binding.errorView.isVisible = false
+
                     adapter.photos = state.photos
                     if (state.photos.isNotEmpty()) {
                         binding.viewPager.setCurrentItem(0, false)
@@ -45,7 +52,11 @@ class MainActivity : AppCompatActivity() {
                 }
                 is UiState.Error -> {
                     binding.swipeRefresh.isRefreshing = false
-                    // TODO: show error
+                    binding.viewPager.isVisible = false
+                    binding.errorView.isVisible = true
+
+                    binding.errorText.text = state.message
+                    adapter.photos = emptyList()
                 }
             }
         }
@@ -58,11 +69,6 @@ class MainActivity : AppCompatActivity() {
         binding.viewPager.adapter = adapter
         binding.viewPager.offscreenPageLimit = 3
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                val photo = adapter.photos[position]
-                Timber.d("Selected: $photo")
-            }
-
             override fun onPageScrollStateChanged(state: Int) {
                 // Disable Swipe-refresh while dragging page in ViewPager
                 if (!binding.swipeRefresh.isRefreshing) {
@@ -85,6 +91,12 @@ class MainActivity : AppCompatActivity() {
 
             binding.swipeRefresh.isRefreshing = isRefreshing
             return@setOnApplyWindowInsetsListener insets
+        }
+    }
+
+    private fun setupErrorView() {
+        binding.errorView.setOnClickListener {
+            viewModel.refresh()
         }
     }
 }
