@@ -5,11 +5,13 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
 import dev.polek.photobrowser.databinding.PhotoLayoutBinding
 import dev.polek.photobrowser.model.Photo
 
-class PhotoAdapter : RecyclerView.Adapter<PhotoAdapter.ViewHolder>() {
+class PhotoAdapter(
+    private val glideRequestManager: RequestManager
+) : RecyclerView.Adapter<PhotoAdapter.ViewHolder>() {
 
     var photos: List<Photo> = emptyList()
         set(value) {
@@ -32,7 +34,7 @@ class PhotoAdapter : RecyclerView.Adapter<PhotoAdapter.ViewHolder>() {
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val photo = photos[position]
 
-        Glide.with(holder.itemView)
+        glideRequestManager
             .load(photo.url)
             .centerInside()
             .into(holder.binding.imageView)
