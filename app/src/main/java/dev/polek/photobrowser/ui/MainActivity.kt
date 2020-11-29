@@ -76,5 +76,15 @@ class MainActivity : AppCompatActivity() {
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.refresh()
         }
+
+        binding.swipeRefresh.setOnApplyWindowInsetsListener { _, insets ->
+            val isRefreshing = binding.swipeRefresh.isRefreshing
+
+            val topInset = insets.systemWindowInsetTop
+            binding.swipeRefresh.setProgressViewOffset(false, 0, topInset)
+
+            binding.swipeRefresh.isRefreshing = isRefreshing
+            return@setOnApplyWindowInsetsListener insets
+        }
     }
 }
