@@ -23,9 +23,6 @@ android {
 
         // API keys
         buildConfigField "String", "FLICKR_API_KEY", "\"${apiKeys['flickr_api_key']}\""
-
-        // Feature toggles
-        buildConfigField "boolean", "ENABLE_FEATURE_IMAGE_PRELOAD", 'true'
     }
 
     buildTypes {
@@ -91,9 +88,6 @@ dependencies {
     // Glide
     def glide_version = '4.11.0'
     implementation "com.github.bumptech.glide:glide:$glide_version"
-    implementation("com.github.bumptech.glide:recyclerview-integration:$glide_version") {
-        transitive = false
-    }
 
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
