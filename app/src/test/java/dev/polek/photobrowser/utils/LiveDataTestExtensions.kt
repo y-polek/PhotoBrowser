@@ -21,6 +21,8 @@ import androidx.lifecycle.Observer
 
 /**
  * Represents a list of capture values from a LiveData.
+ *
+ * Copy of [LiveDataTestExtensions.kt](https://github.com/googlecodelabs/kotlin-coroutines/blob/master/coroutines-codelab/finished_code/src/test/java/com/example/android/kotlincoroutines/main/utils/LiveDataTestExtensions.kt)
  */
 class LiveDataValueCapture<T> {
 

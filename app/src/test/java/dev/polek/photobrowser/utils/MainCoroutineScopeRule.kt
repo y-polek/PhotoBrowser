@@ -60,6 +60,8 @@ import org.junit.runner.Description
  * By default, [MainCoroutineScopeRule] will be in a *resumed* state.
  *
  * @param dispatcher if provided, this [TestCoroutineDispatcher] will be used.
+ *
+ * Copy of [MainCoroutineScopeRule.kt](https://github.com/googlecodelabs/kotlin-coroutines/blob/master/coroutines-codelab/finished_code/src/test/java/com/example/android/kotlincoroutines/main/utils/MainCoroutineScopeRule.kt)
  */
 @ExperimentalCoroutinesApi
 class MainCoroutineScopeRule(val dispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()) :
